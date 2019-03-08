@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>editor</title>
+
+</head>
+<body>
+<h1>提交的文章内容</h1>
+<div class="article">
+
+</div>
+<h1>请输入内容</h1>
+<div class="edit">
+    <textarea name="content" id="" cols="30" rows="10"></textarea>
+</div>
+</body>
+<script src="/static/jquery-3.3.1.js"></script>
+<script src="/static/kindeditor-all.js"></script>
+<script>
+
+     $(document).ready(
+         $(function () {
+             KindEditor.create("textarea[name='content']",{})
+         })
+     )
+
+
+</script>
+</html>
