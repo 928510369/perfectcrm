@@ -1,0 +1,117 @@
+{% extends "king_admin/table_index.html" %}
+{% load tags %}
+{% block extra-css %}
+    .input-style{
+        min-height:100px;
+        min-width:350px;
+    }
+
+{% endblock %}
+{% block container %}
+    <h3>change {% render_name modeladmin %}</h3><br>
+    <span style="color:red;">{{ modelform.errors }}</span>
+    <form class="form-horizontal" method="post" onsubmit="selectall()">
+
+    {% for field in modelform %}
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label" style="font-weight: normal">
+                {% if field.field.required %}
+                 <b>{{ field.label }}</b>
+                {% else %}
+                    {{ field.label }}
+                {% endif %}
+
+            </label>
+            <div class="col-sm-9">
+                {% if field.name in modeladmin.filter_horizontal %}
+                    <div class="col-sm-4">
+
+                    {% if field.name in modeladmin.readonly_fields and not modeladmin.is_add_form%}
+                        <select name="{{ field.name }}_old" id="id_{{ field.name }}_from"  class="input-style" multiple>
+                        {% get_m2m_onj_list modeladmin  modelform field as m2m_field_objs %}
+                            {% for field_part in m2m_field_objs %}
+                                <option   disabled value="{{ field_part.id }}">{{ field_part }}</option>
+                            {% endfor %}
+
+
+                        </select>
+
+                     {% else %}
+                         <select name="{{ field.name }}_old" id="id_{{ field.name }}_from"  class="input-style" multiple>
+                        {% get_m2m_onj_list modeladmin  modelform field as m2m_field_objs %}
+                            {% for field_part in m2m_field_objs %}
+                                <option  ondblclick="moveElement(this,'id_{{ field.name }}_to','id_{{ field.name }}_from')" value="{{ field_part.id }}">{{ field_part }}</option>
+                            {% endfor %}
+
+
+                        </select>
+                        <input type="button" onclick="allchildevent(this,'choose','id_{{ field.name }}_to','id_{{ field.name }}_from')" value="choose all">
+                    {% endif %}
+                    </div>
+                    <div class="col-sm-1">箭头</div>
+                     <div class="col-sm-4">
+                         {% if field.name in modeladmin.readonly_fields and not modeladmin.is_add_form%}
+                             {% get_m2m_select_objs modelform field as m2m_select_objs %}
+                             <select tags="select" name={{ field.name }} id="id_{{ field.name }}_to" class="input-style" multiple>
+                                {% for field_select_part in m2m_select_objs %}
+                                        <option  disabled  value="{{ field_select_part.id }}">{{ field_select_part }}</option>
+                                    {% endfor %}
+                                </select>
+
+                         {% else %}{% get_m2m_select_objs modelform field as m2m_select_objs %}
+                             <select tags="select" name={{ field.name }} id="id_{{ field.name }}_to" class="input-style" multiple>
+                                {% for field_select_part in m2m_select_objs %}
+                                        <option ondblclick="moveElement(this,'id_{{ field.name }}_from','id_{{ field.name }}_to')"  value="{{ field_select_part.id }}">{{ field_select_part }}</option>
+                                    {% endfor %}
+                                </select>
+                                 <input type="button"  onclick="allchildevent(this,'choose','id_{{ field.name }}_from','id_{{ field.name }}_to')" value="remove all">
+                         {% endif %}
+                    </div>
+                {% else %}
+                    {{ field }}<span style="color:gray;">{{ field.help_text }}</span>{{ field.errors }}
+                {% endif %}
+
+            </div>
+        </div>
+    {% endfor %}
+    {% if  modeladmin.tablereadonly_option %}
+    {% else %}
+         <div class="form-group">
+            {% block obj-delete %}
+                <div class="col-sm-2">
+                   <button type="button" class="btn-primary btn-danger btn-lg"><a href="{% url 'table_objs_delete' app_name table_name modelform.instance.id %}  ">delete</a></button>
+                </div>
+            {% endblock %}
+
+            <div class="col-sm-10">
+               <button type="submit"  class="btn-primary btn-success btn-lg pull-right">Save</button>
+            </div>
+        </div>
+    {% endif %}
+
+
+    </form>
+    <script>
+        function moveElement(self,target_id,new_target_id) {
+            console.log("1",$(self).text())
+            var ele= '<option '+'ondblclick="moveElement(this,'+"'"+new_target_id+"'"+','+"'"+target_id+"'"+')"'+'value='+$(self).val()+'>'+$(self).text()+'</option>'
+            $('#'+target_id).append(ele)
+            $(self).remove()
+        }
+        function allchildevent(self,type,aim,from){
+            {#console.log($('#'+from).children())#}
+            $('#'+aim).append($('#'+from).children())
+
+        }
+        function selectall() {
+
+            $("select[tags='select'] option").each(function () {
+                $(this).prop("selected",true)
+            })
+            $("form").find("[disabled]").removeAttr("disabled")
+
+
+
+        }
+    </script>
+{% endblock %}

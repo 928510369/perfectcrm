@@ -1,0 +1,38 @@
+
+{% extends "index.html" %}
+{% block page_content %}
+    <div class="container">
+       <span>{{ modelobj.errors }}</span>
+        <form class="form-horizontal col-lg-7" method="post">
+            <div class="form-group">
+                    <label class="col-sm-4 control-label" >用户</label>
+                    <div class="col-lg-7">
+                        {{ customer.qq }}:{{ customer.name }}
+
+                    </div>
+                 </div>
+            {% for field in modelobj%}
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" >{{ field.label }}</label>
+                    <div class="col-lg-7">
+                        {{ field }}
+
+                    </div>
+                 </div>
+            {% endfor %}
+
+            <button class="btn btn-success pull-right" type="submit">下一步</button>
+             <div class="row">
+                 <div class="col-lg-7">
+                    <ul>
+                     {% for k,v in msgs.items %}
+                     <li>{{ k }}:{{ v }}</li>
+                     {% endfor %}
+                     </ul>
+                 </div>
+             </div>
+        </form>
+    </div>
+
+
+{% endblock %}

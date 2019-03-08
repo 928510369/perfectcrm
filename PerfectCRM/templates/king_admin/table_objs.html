@@ -1,0 +1,149 @@
+{% extends "king_admin/table_index.html" %}
+{% load tags %}
+{% block container %}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            {% if not modeladmin.tablereadonly_option %}
+                <h3 class="panel-title">{% render_name modeladmin %}<a class="pull-right" style="cursor: pointer" href="{{ request.path }}add/">添加</a></h3>
+            {% endif %}
+
+
+        </div>
+        <div class="panel-body">
+            <form method="get">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <input type="search" name="q_field" id="search_field" style="margin-left: 15px "
+                               class="col-lg-1 form-control" value="{{ search_filed }}"
+                               placeholder="search for{% for search_field_option in modeladmin.search_fields %}{{ search_field_option }},{% endfor %}"/>
+
+                    </div>
+                    <div class="col-lg-2" 　>
+                        <button type="SUBMIT" class="btn btn-success">search</button>
+                    </div>
+
+                </div>
+                <br>
+                {% for render_filter in modeladmin.list_filters %}
+
+                    <div class="col-lg-1">
+                        <span>{{ render_filter }}</span>
+                        {% render_select modeladmin render_filter filter_dict date_select %}
+
+                    </div>
+                {% endfor %}
+                {% if modeladmin.list_filters %}
+                    <button type="submit" class="btn btn-success"  style="margin-top: 20px">检索</button>
+                {% else %}
+                {% endif %}
+
+
+            </form>
+            <div class="row">
+                <form method="post" onsubmit="return Actionbegin(this)">
+                    <select name="action_name" id="action_id" style="margin-left: 30px">
+                        <option>---------------</option>
+                        {% for action in modeladmin.actions %}
+                            <option value="{{ action }}">{% display_action_name modeladmin action%}</option>
+                        {% endfor %}
+
+                    </select>
+                    <button type="submit">GO</button>
+                </form>
+            </div>
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                <th style="width: 50px"><input onclick="checkAlleles(this)" type="checkbox" >all</th>
+                    {% for column in modeladmin.list_display %}
+                        {% build_header_column column order_key filter_dict previous_key search_filed modeladmin %}
+
+                        {#                        <th>{{ column }}</th>#}
+                    {% endfor %}
+
+                </tr>
+                </thead>
+                <tbody>
+
+                {#                {% get_query_sets modeladmin  as query_sets %}#}
+
+                {% for query_set in query_sets %}
+                    <tr>
+                        <td><input tags="input_check" type="checkbox" value="{{ query_set.id }}" ></td>
+                        {% render_querys request query_set modeladmin %}
+                    </tr>
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+            <span>共有{{ query_sets.paginator.count }}条记录</span>
+
+            <nav aria-label="...">
+
+                <ul class="pagination">
+                    {% sort_a previous_key as sort_a %}
+                    {% page_filters filter_dict as page_addfilters %}
+                    <li><a href="?page=1{{ page_addfilters }}&{{ sort_a }}&q_field={{ search_filed }}">首页</a></li>
+
+                    {% if query_sets.has_previous %}
+                        <li><a href="?page=
+                                {{ query_sets.previous_page_number }}{{ page_addfilters }}&{{ sort_a }}&q_field={{ search_filed }}">上一页</a>
+                        </li>
+                    {% endif %}
+
+                    {#                    {% for loop in query_sets.paginator.page_range %}#}
+                    {#                        {% render_page_ele loop query_sets filter_dict %}#}
+                    {#                    {% endfor %}#}
+
+                    {% render_pages query_sets filter_dict previous_key search_filed %}
+
+
+                    {% if query_sets.has_next %}
+                        <li><a href="?page=
+                                {{ query_sets.next_page_number }}{{ page_addfilters }}&{{ sort_a }}&q_field={{ search_filed }}">下一页</a>
+                        </li>
+                    {% endif %}
+                    <li><a href="?page=
+                            {{ query_sets.paginator.count }}{{ page_addfilters }}&{{ sort_a }}&q_field={{ search_filed }}">尾页</a>
+                    </li>
+                </ul>
+
+
+            </nav>
+        </div>
+    </div>
+    <script>
+        function checkAlleles(self) {
+            {#console.log($(self).prop("checked"))#}
+            if($(self).prop("checked")){
+                $('input[tags="input_check"]').prop("checked",true)
+            }
+            else{
+                $('input[tags="input_check"]').prop("checked",false)
+            }
+        }
+        function Actionbegin(form_ele) {
+            var checkedobjs=[];
+            var action=$("#action_id").val()
+            $('input[tags="input_check"]:checked').each(function () {
+                checkedobjs.push($(this).val())
+            });
+
+            if(checkedobjs.length==0){
+                alert("No objects is got")
+                return
+            }
+            if(!action){
+                alert("No action is got")
+            }
+            $('input:hidden').remove()
+            var selected_objs_id="<input type='hidden'"+"name='obj_ids'"+"value="+checkedobjs.toString()+">"
+            $(form_ele).append(selected_objs_id)
+            return true
+        }
+    </script>
+{% endblock %}

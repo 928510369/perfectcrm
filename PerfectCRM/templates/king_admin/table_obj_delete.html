@@ -1,0 +1,21 @@
+{% extends "king_admin/table_index.html" %}
+{% load tags%}
+{% block container %}
+    {% display_delete_obj objs %}
+    <div class="form-group">
+    <ul style="color:red;">
+        {% for k,v in errors.items %}
+            <li>{{ k }}:{{ v }}</li>
+        {% endfor %}
+
+    </ul>
+        <form method="post">
+            <input type="submit" value="Yes,I'm sure" class="btn btn-danger">
+            <input type="hidden" name="delete_sure" value="yes">
+            <input type="hidden" name="action_name" value="{{ action }}">
+            <input type="hidden" name="obj_ids" value="{{ id_list }}">
+            <a class="btn btn-primary"  href="{% url 'table_objs' app_name table_name%}">No thanks</a>
+        </form>
+        </div>
+
+{% endblock %}

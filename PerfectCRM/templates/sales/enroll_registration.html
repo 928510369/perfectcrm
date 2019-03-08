@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load crm_tags %}
+{% block body %}
+    <div class="container col-lg-7 col-lg-offset-2">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">PerfectCrm</h3>
+            </div>
+            <div class="panel-body">
+                {% if status != 1 %}
+                    <span style="color: red;">{{ customer_obj.errors }}</span>
+                    <form method="post" onsubmit="return Stuagree()">
+
+                        {% for field in customer_obj %}
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="col-lg-2 ">{{ field.label }}</label>
+                                    <div class="col-lg-10">
+                                        {{ field }}
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+                        <br/>
+                        <div class="row ">
+                            <div class="form-group ">
+                                <label class="col-lg-2">所报班级</label>
+                                <div class="col-lg-10">
+                                    {{ enroll_obj.enrolled_class }}
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row ">
+                            <div class="form-group ">
+                                <label class="col-lg-2 control-label">课程费用</label>
+                                <div class="col-lg-10">
+                                    {{ enroll_obj.enrolled_class.course.price }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">开课日期</label>
+                                <div class="col-lg-10">
+                                    {{ enroll_obj.enrolled_class.start_date }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="height:600px;overflow: auto">
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">合同</label>
+                                <div class="col-lg-10">
+                                    <pre>{% render_enroll_extract enroll_obj %}</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="checkbox" name="stu_agree">用户同意并已观看合同条款
+                        <button type="submit" class="btn btn-success pull-right">提交</button>
+                    </form>
+                {% else %}
+                    <h2>感谢，报名表已提交，您的合同将很快被审核，即将开启激动的自我提升之旅！</h2>
+                {% endif %}
+
+
+            </div>
+           {% if status != 1 %}
+                    <p>请上传身份照正反面照片</p>
+                    <form id="filedropzone" method="post" action="{{ request.path }}"
+                          class="dropzone dz-clickable">
+                        <div class="dz-default dz-message">
+                            <div class="dz-icon icon-wrap icon-circle icon-wrap-md">
+                                <i class="fa fa-cloud-upload fa-3x"></i>
+                            </div>
+                            <div>
+                                <p class="dz-text">把证件信息拖放到这里</p>
+                                <p class="text-muted">最多可上传2张照片</p>
+                            </div>
+                        </div>
+
+                    </form>
+
+                {% endif %}
+        </div>
+    </div>
+
+
+
+{% endblock %}
+{% block bottom_js %}
+    <script>
+        $(document).ready(function () {
+            Dropzone.options.filedropzone = {
+                url: "{{ request.path }}",
+                paramName: "file", // The name that will be used to transfer the file
+                maxFilesize: 1, // MB,
+                addRemoveLinks: true,
+                maxFiles: 5,
+                uploadMultiple: true,
+                accept: function (file, done) {
+                    if (file.name == "justinbieber.jpg") {
+                        done("Naha, you don't.");
+                    }
+                    else {
+                        done();
+                    }
+                }
+            }
+
+            Dropzone.autoDiscover = false;
+            myDropzone = new Dropzone("#filedropzone");
+            myDropzone.on("addedfile", function (file) {
+                /* Maybe display some more file information on your page */
+                console.log("-------", file)
+            });
+            console.log(myDropzone.files)
+
+
+            myDropzone.on("success", function (file, response) {
+                /* Maybe display some more file information on your page */
+                console.log('filex upload done...',);
+            })
+
+        })
+
+        function Stuagree() {
+            if ($("form :checkbox").prop("checked")) {
+                $("form").find(":disabled").removeAttr("disabled")
+                if (myDropzone.files.length < 2) {
+                    alert("必须上传两张图片")
+                    return false
+                }
+
+                return true
+            }
+            else {
+                alert("用户还未同意合同条款")
+                return false
+            }
+        }
+
+    </script>
+{% endblock %}

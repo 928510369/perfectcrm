@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+ {% block body %}
+     <body>
+
+    <div class="container col-lg-offset-4">
+
+      <form class="form-signin col-lg-5 " method="post">
+        <h2 class="form-signin-heading">Perfectcrm</h2>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+          <span style="color:red">{{ error }}</span>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+    </div> <!-- /container -->
+
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+
+
+ {% endblock %}

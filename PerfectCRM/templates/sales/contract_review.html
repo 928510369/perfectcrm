@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+{% load crm_tags %}
+{% block page_content %}
+
+    <div class="row">
+        <h3>顾客信息</h3>
+        {{ customerform.as_table }}
+        <h3>报名信息</h3>
+        {{ enrollform.as_table }}
+
+        <a class="btn btn-danger pull-left" href="{% url "enrollment_rejection" enroll_obj.id  %}">驳回合同</a>
+        <a class="btn btn-success pull-right" href="{% url "payment" enroll_obj.id %}">审核通过</a>
+    </div>
+
+{% endblock %}
+{% block bottom_js %}
+
+{% endblock %}
